@@ -1,0 +1,24 @@
+"""
+Idea:
+    Learn some new words during routine using of computer
+
+1) User print the word in any known language in line edit
+2) Parse the image in high resolution for the most popular
+requests
+3) load image and offer image to user with word in needed language,
+transcription and translation
+    * create new image with dates
+4) Set the image with dates as wallpaper to desktop
+5) Sometimes changes the wallpaper to old versions to repeat some words
+
+available functions:
+    * spontaneous notifications with checking
+    * keyboard shortcuts
+
+technologies:
+    * pyqt
+    * requests
+    * pillow
+    * database
+    * working with files
+"""
