@@ -1,19 +1,26 @@
+import os
+from ctypes import windll
+from PIL import Image
 from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow
 import sys
+from parser import ImageParsing
+import shutil
+from PyQt5 import QtGui
 
 
 class Main(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setObjectName("MainWindow")
-        self.resize(872, 661)
+        self.resize(900, 700)
         self.setStyleSheet("font: 75 14pt \"Palatino Linotype\";\n"
                            "background-color: rgb(241, 183, 255);")
         self.centralWidget = QtWidgets.QWidget()
 
         self.gridLayoutWidget = QtWidgets.QWidget(self.centralWidget)
-        self.gridLayoutWidget.setGeometry(QtCore.QRect(10, 10, 841, 601))
+        self.gridLayoutWidget.setGeometry(QtCore.QRect(10, 10, 890, 690))
 
         self.gridLayout_3 = QtWidgets.QGridLayout(self.gridLayoutWidget)
         self.gridLayout_3.setContentsMargins(0, 0, 0, 0)
@@ -39,10 +46,12 @@ class Main(QMainWindow):
         self.label.setScaledContents(True)
         self.label.setAlignment(QtCore.Qt.AlignCenter)
         self.label.setWordWrap(True)
-        self.gridLayout_3.addWidget(self.label, 1, 0, 1, 3)
+        self.path = 'images/cat_10.png'
+        self.label.setPixmap(QPixmap(self.path))
+        self.gridLayout_3.addWidget(self.label, 1, 0, 1, 6)
         self.setCentralWidget(self.centralWidget)
         self.menubar = QtWidgets.QMenuBar(self)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 872, 37))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 890, 40))
         self.menu_load_local_wallpaper = QtWidgets.QMenu(self.menubar)
         self.setMenuBar(self.menubar)
         self.menubar.addAction(self.menu_load_local_wallpaper.menuAction())
@@ -61,6 +70,41 @@ class Main(QMainWindow):
 class Loop(Main):
     def __init__(self):
         super().__init__()
+        self.pushButton.clicked.connect(lambda: self.pushed())
+
+    def pushed(self):
+        print(os.getcwd() + '\\itog_images\\' + self.path[7:])
+        dog_jpg = Image.open(self.path)
+        dog_jpg.save('itog_images\\' + self.path[7:])
+        wallpaper = bytes(os.getcwd() + '\\itog_images\\' + self.path[7:], 'utf-8')
+        windll.user32.SystemParametersInfoA(20, 0, wallpaper, 3)
+
+    def resizeEvent(self, a0: QtGui.QResizeEvent) -> None:
+        pass
+
+    def keyReleaseEvent(self, a0: QtGui.QKeyEvent) -> None:
+        print(a0.key())
+        if str(a0.key()) == '16777220':
+            shutil.rmtree(os.getcwd() + r'\images')
+            os.mkdir('images')
+            parser_ = ImageParsing(self.lineEdit.text())
+            parser_.download_image()
+            self.path = os.listdir('images')[0]
+            self.label.setPixmap(QPixmap(self.path))
+        if str(a0.key()) == "16777234":
+            for i in range(len(os.listdir('images'))):
+                if os.listdir('images')[i] == self.path[7:]:
+                    self.path = os.listdir('images')[(i - 1) % len(os.listdir('images'))]
+                    break
+            self.path = "images/" + self.path
+            self.label.setPixmap(QPixmap(self.path))
+        if str(a0.key()) == "16777236":
+            for i in range(len(os.listdir('images'))):
+                if os.listdir('images')[i] == self.path[7:]:
+                    self.path = os.listdir('images')[(i + 1) % len(os.listdir('images'))]
+                    break
+            self.path = "images/" + self.path
+            self.label.setPixmap(QPixmap(self.path))
 
 
 if __name__ == '__main__':
@@ -68,3 +112,14 @@ if __name__ == '__main__':
     ex = Loop()
     ex.show()
     app.exec()
+
+
+
+"""
+открыть локальную картинку
+подстройка текста под изображенифе двигаться по курсору мыши до нажатия на клавижу и адаптация цвета
+иструкция
+базы данных пути к обоям и количество использованных раз
+самоликвидация приложения
+pep 8
+"""

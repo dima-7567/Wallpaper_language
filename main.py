@@ -1,5 +1,4 @@
 from app import Main
-from Translater import ContextTranslateParser
 from parser import *
 import asyncio
 
