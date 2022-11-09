@@ -46,8 +46,6 @@ class Main(QMainWindow):
         self.label.setScaledContents(True)
         self.label.setAlignment(QtCore.Qt.AlignCenter)
         self.label.setWordWrap(True)
-        self.path = 'images/cat_10.png'
-        self.label.setPixmap(QPixmap(self.path))
         self.gridLayout_3.addWidget(self.label, 1, 0, 1, 6)
         self.setCentralWidget(self.centralWidget)
         self.menubar = QtWidgets.QMenuBar(self)
@@ -70,20 +68,29 @@ class Main(QMainWindow):
 class Loop(Main):
     def __init__(self):
         super().__init__()
+        self.label.setText("""
+        Whenever you write the word or frase you are going to learn press 'enter'
+        wait 2-3 minutes to load images and add text
+        choose wallpaper that you like using right and left arrows 
+        press the button to set wallpaper on the desktop
+        """)
         self.pushButton.clicked.connect(lambda: self.pushed())
 
     def pushed(self):
-        print(os.getcwd() + '\\itog_images\\' + self.path[7:])
-        dog_jpg = Image.open(self.path)
-        dog_jpg.save('itog_images\\' + self.path[7:])
-        wallpaper = bytes(os.getcwd() + '\\itog_images\\' + self.path[7:], 'utf-8')
-        windll.user32.SystemParametersInfoA(20, 0, wallpaper, 3)
+        try:
+            dog_jpg = Image.open(self.path)
+            dog_jpg.save('itog_images\\' + self.path[7:])
+            wallpaper = bytes(os.getcwd() + '\\itog_images\\' + self.path[7:], 'utf-8')
+            windll.user32.SystemParametersInfoA(20, 0, wallpaper, 3)
+        except Exception:
+            # user pushed the button without images
+            pass
 
     def resizeEvent(self, a0: QtGui.QResizeEvent) -> None:
-        pass
+        self.gridLayoutWidget.resize(a0.size())
 
     def keyReleaseEvent(self, a0: QtGui.QKeyEvent) -> None:
-        print(a0.key())
+        # print(a0.key())
         if str(a0.key()) == '16777220':
             shutil.rmtree(os.getcwd() + r'\images')
             os.mkdir('images')

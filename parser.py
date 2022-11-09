@@ -97,6 +97,7 @@ class ImageParsing(MainPage):
         self.res.pop(-1)
         self.res.pop(-1)
         self.res.pop(-1)
+        # This is the way...
 
         new = q.rfind('.jpg"')
         while new != -1:
@@ -110,26 +111,41 @@ class ImageParsing(MainPage):
         for i, url in enumerate(self.res):
             try:
                 img = requests.get(url)
-                img_file = open(f"{self.inquiry_}_{i}", 'wb')
+                img_file = open(f"images/{self.inquiry_}_{i}", 'wb')
                 img_file.write(img.content)
                 img_file.close()
-                using_image = Image.open(f"{self.inquiry_}_{i}")
+                using_image = Image.open(f"images/{self.inquiry_}_{i}")
                 translator = Translator(to_lang="German")
                 translation = translator.translate(self.inquiry_.replace('_', ' '))
                 font = ImageFont.truetype("arial.ttf", 100)
                 drawer = ImageDraw.Draw(using_image)
-                drawer.text((50, 50), f"{translation}", font=font, fill='black')
+                colour = [0, 0, 0]
+                for x in range(using_image.size[1]):
+                    for y in range(using_image.size[0]):
+                        try:
+                            r, g, b = using_image.getpixel((y, x))
+                        except Exception:
+                            r, g, b, _ = using_image.getpixel((y, x))
+                        colour[0] += r
+                        colour[1] += g
+                        colour[2] += b
+                for p in range(3):
+                    colour[p] = 255 - colour[p] // (using_image.size[1] * using_image.size[0])
+                drawer.text(
+                    (using_image.size[1] // 10, using_image.size[0] // 10), f"{translation}",
+                    font=font,
+                    fill="#" + ('{:X}{:X}{:X}').format(*colour)
+                )
 
                 using_image.save(f"images/{self.inquiry_}_{i}.png", format='PNG')
                 using_image.close()
-                os.remove(f"{self.inquiry_}_{i}")
-            except Exception:
                 # error in downloading image
                 # or image is bad for being wallpaper
-                pass
-            if i == 10:
-                # stop download
-                break
+                if i >= 10:
+                    # stop download
+                    break
+            except Exception as ex:
+                print(ex)
 
 
 if __name__ == "__main__":
