@@ -117,7 +117,7 @@ class ImageParsing(MainPage):
                 using_image = Image.open(f"images/{self.inquiry_}_{i}")
                 translator = Translator(to_lang="German")
                 translation = translator.translate(self.inquiry_.replace('_', ' '))
-                font = ImageFont.truetype("arial.ttf", 100)
+                font = ImageFont.truetype("arial.ttf", 50)
                 drawer = ImageDraw.Draw(using_image)
                 colour = [0, 0, 0]
                 for x in range(using_image.size[1]):
@@ -132,7 +132,7 @@ class ImageParsing(MainPage):
                 for p in range(3):
                     colour[p] = 255 - colour[p] // (using_image.size[1] * using_image.size[0])
                 drawer.text(
-                    (using_image.size[1] // 10, using_image.size[0] // 10), f"{translation}",
+                    (using_image.size[0] // 10, using_image.size[1] // 10), f"{translation}",
                     font=font,
                     fill="#" + ('{:X}{:X}{:X}').format(*colour)
                 )
